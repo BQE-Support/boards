@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>BQE Support Boards</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233454D1'/%3E%3Cpath d='M8 9h7v6H8zM17 9h7v6h-7zM8 17h7v6H8zM17 17h7v6h-7z' fill='white'/%3E%3C/svg%3E">
+<script src="bqe-board.js"></script>
+<style>
+  :root {
+    --bg: #F5F6F9; --surface: #FFFFFF; --surface-alt: #ECEFF5; --border: #DDE1EA;
+    --ink: #16213E; --ink-2: #47517A; --ink-3: #8890AC;
+    --accent: #3454D1; --accent-soft: #E7EBFB; --good: #1E8A5F; --critical: #C23B3B;
+    --shadow: 0 1px 2px rgba(22,33,62,0.06), 0 6px 16px rgba(22,33,62,0.06);
+    --serif: Georgia, "Iowan Old Style", "Source Serif 4", "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0C1220; --surface: #131A2B; --surface-alt: #1B2438; --border: #29334A;
+      --ink: #E9ECF6; --ink-2: #B0B7D1; --ink-3: #7C86A3; --accent: #7C93F5; --accent-soft: #1E2748; --good: #4FC090; --critical: #E2685A;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 6px 20px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0C1220; --surface: #131A2B; --surface-alt: #1B2438; --border: #29334A;
+    --ink: #E9ECF6; --ink-2: #B0B7D1; --ink-3: #7C86A3; --accent: #7C93F5; --accent-soft: #1E2748; --good: #4FC090; --critical: #E2685A;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 6px 20px rgba(0,0,0,0.3);
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.45; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 16px 40px; display: flex; flex-direction: column; gap: 22px; }
+  .topbar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); }
+  .top-btn { border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 12.5px; cursor: pointer; }
+  .top-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .eyebrow { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  h1 { font-family: var(--serif); font-size: 32px; margin: 2px 0 6px; font-weight: 600; }
+  .lead { color: var(--ink-2); max-width: 720px; margin: 0; }
+  .signin { max-width: 440px; margin: 12vh auto 0; text-align: center; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+  .signin p { color: var(--ink-2); margin: 0; }
+  .signin .msg { color: var(--critical); font-size: 13px; }
+  .signin .note { color: var(--good); font-size: 13px; }
+  .signin form { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; }
+  .signin input { border: 1px solid var(--border); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 9px 11px; font: 14px var(--sans); }
+  .signin a { color: var(--accent); }
+  .tiny { font-size: 12.5px; }
+  .primary-btn { background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; font: inherit; font-weight: 600; cursor: pointer; }
+  .search { border: 1px solid var(--border); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 8px 11px; font: inherit; width: 100%; max-width: 360px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 16px 18px; }
+  .card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+  .card .t { font-family: var(--serif); font-size: 19px; font-weight: 600; color: var(--accent); display: flex; justify-content: space-between; gap: 8px; }
+  .card .b { color: var(--ink-2); font-size: 13.5px; flex: 1; }
+  .card .u { color: var(--ink-3); font-size: 12px; overflow-wrap: anywhere; }
+  .chip { align-self: flex-start; border-radius: 999px; padding: 1px 9px; font-size: 11.5px; background: var(--surface-alt); color: var(--ink-2); }
+  .empty { color: var(--ink-2); }
+  .err { color: var(--critical); font-size: 13px; }
+  footer { text-align: center; color: var(--ink-3); font-size: 12px; }
+  @media (max-width: 640px) { h1 { font-size: 26px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar" id="topbar" hidden>
+    <span id="viewerName"></span>
+    <button type="button" class="top-btn" id="themeBtn">Theme</button>
+    <button type="button" class="top-btn" id="signOutBtn">Sign out</button>
+  </div>
+
+  <div class="signin" id="signin" hidden>
+    <div class="eyebrow">BQE Support</div>
+    <h1>Support Boards</h1>
+    <p>One page with a link to every board you can open. Sign in with your RingCentral account.</p>
+    <button type="button" class="primary-btn" id="signInBtn">Sign in with RingCentral</button>
+    <p class="tiny"><a href="#" id="zdSignIn">No RingCentral account? Sign in with Zendesk</a> &middot; <a href="#" id="emailToggle">or with email</a></p>
+    <form id="emailForm" hidden>
+      <input type="email" id="emEmail" placeholder="you@bqe.com" autocomplete="username" required>
+      <input type="password" id="emPw" placeholder="Password" autocomplete="current-password" required>
+      <button type="submit" class="primary-btn" id="emBtn">Sign in</button>
+      <p class="tiny"><a href="#" id="emForgot">Forgot password?</a></p>
+    </form>
+    <form id="setPwForm" hidden>
+      <p id="setPwTitle"></p>
+      <input type="password" id="newPw" placeholder="New password (8 or more characters)" autocomplete="new-password" required minlength="8">
+      <input type="password" id="newPw2" placeholder="Type it again" autocomplete="new-password" required minlength="8">
+      <button type="submit" class="primary-btn" id="setPwBtn">Save password and sign in</button>
+    </form>
+    <div class="note" id="signinNote"></div>
+    <div class="msg" id="signinMsg"></div>
+  </div>
+
+  <div id="board" hidden style="display:flex; flex-direction:column; gap:22px;">
+    <div>
+      <div class="eyebrow">BQE Support</div>
+      <h1>Support Boards</h1>
+      <p class="lead">Every board shared with you. Each one opens in a new tab and keeps you signed in.</p>
+    </div>
+    <div><input type="search" class="search" id="q" placeholder="Filter boards" aria-label="Filter boards"></div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="none" hidden>No board matches that filter.</div>
+    <div class="err" id="err"></div>
+  </div>
+  <footer>Boards are shared by your support lead. Missing one? Ask for access.</footer>
+</div>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  var LIST = [];
+
+  function render() {
+    var f = $("q").value.trim().toLowerCase();
+    var rows = LIST.filter(function (b) { return !f || (b.title + " " + b.blurb).toLowerCase().indexOf(f) >= 0; });
+    $("grid").innerHTML = rows.map(function (b) {
+      return "<a class='card' href='" + esc(b.url) + "' target='_blank' rel='noopener'>" +
+        "<div class='t'><span>" + esc(b.title) + "</span><span aria-hidden='true'>&#8599;</span></div>" +
+        "<div class='b'>" + esc(b.blurb) + "</div>" +
+        "<span class='chip'>" + esc(b.role) + "</span></a>";
+    }).join("");
+    $("none").hidden = rows.length > 0 || !LIST.length;
+  }
+  function load() {
+    $("err").textContent = "";
+    BQEBoard.api("board-directory").then(function (j) { LIST = j.boards || []; render(); })
+      .catch(function (e) { $("err").textContent = e.message; });
+  }
+  $("q").addEventListener("input", render);
+
+  // ---- theme ----
+  function applyTheme(t) { if (t) document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme"); }
+  try { applyTheme(localStorage.getItem("bqeBoards.theme")); } catch (e) {}
+  $("themeBtn").addEventListener("click", function () {
+    var dark = document.documentElement.getAttribute("data-theme") === "dark" || (!document.documentElement.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+    var t = dark ? "light" : "dark"; applyTheme(t); try { localStorage.setItem("bqeBoards.theme", t); } catch (e) {}
+  });
+
+  // ---- sign-in (same options as the other boards) ----
+  function showSignin(msg) { $("board").hidden = true; $("topbar").hidden = true; $("signin").hidden = false; $("signinMsg").textContent = msg || ""; }
+  function signinNote(t) { $("signinNote").textContent = t || ""; $("signinMsg").textContent = ""; }
+  $("signInBtn").addEventListener("click", function () { $("signinMsg").textContent = ""; BQEBoard.signIn().catch(function (e) { showSignin(e.message); }); });
+  $("zdSignIn").addEventListener("click", function (e) { e.preventDefault(); BQEBoard.signIn("zendesk").catch(function (x) { showSignin(x.message); }); });
+  $("emailToggle").addEventListener("click", function (e) { e.preventDefault(); $("emailForm").hidden = !$("emailForm").hidden; if (!$("emailForm").hidden) $("emEmail").focus(); });
+  $("emailForm").addEventListener("submit", function (e) {
+    e.preventDefault(); signinNote(""); $("emBtn").disabled = true;
+    BQEBoard.emailSignIn($("emEmail").value.trim().toLowerCase(), $("emPw").value)
+      .catch(function (x) { showSignin(x.message); }).finally(function () { $("emBtn").disabled = false; $("emPw").value = ""; });
+  });
+  $("emForgot").addEventListener("click", function (e) {
+    e.preventDefault();
+    var email = $("emEmail").value.trim().toLowerCase();
+    if (!/@/.test(email)) { showSignin("Type your email address first, then click Forgot password."); return; }
+    BQEBoard.emailReset(email).then(function () { signinNote("If that address has an account, a reset link is on its way. It works once, within an hour."); })
+      .catch(function (x) { showSignin("Couldn't send the email: " + x.message); });
+  });
+  $("setPwForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if ($("newPw").value !== $("newPw2").value) { showSignin("The two passwords don't match."); return; }
+    signinNote(""); $("setPwBtn").disabled = true;
+    BQEBoard.setPassword($("newPw").value)
+      .then(function () { $("setPwForm").hidden = true; })
+      .catch(function (x) { showSignin(x.message); }).finally(function () { $("setPwBtn").disabled = false; $("newPw").value = $("newPw2").value = ""; });
+  });
+  $("signOutBtn").addEventListener("click", function () { BQEBoard.signOut(); });
+
+  BQEBoard.start({
+    board: "*",
+    onSignIn: showSignin,
+    onSetPassword: function (p) {
+      $("board").hidden = true; $("signin").hidden = false; $("emailForm").hidden = true; $("setPwForm").hidden = false;
+      $("setPwTitle").textContent = (p.type === "invite" ? "Welcome. Choose a password" : "Choose a new password") + (p.email ? " for " + p.email : "") + ".";
+      $("newPw").focus();
+    },
+    onReady: function (v) {
+      $("signin").hidden = true; $("board").hidden = false; $("topbar").hidden = false;
+      $("viewerName").textContent = v.name; load();
+    }
+  });
+})();
+</script>
+</body>
+</html>
