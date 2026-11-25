@@ -102,14 +102,21 @@
     <div class="empty" id="none" hidden>No board matches that filter.</div>
     <div class="err" id="err"></div>
   </div>
-  <footer>Boards are shared by your support lead. Missing one? Ask for access.</footer>
+  <footer id="foot">Boards are shared by your support lead. Missing one? Ask for access.</footer>
 </div>
 
 <script>
 (function () {
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-  var LIST = [];
+  var LIST = [], VIEWER = "", CONTACT = "";
+
+  // "Missing one? Request access": opens an email to the person who shares boards, with the request filled in.
+  function askLink() {
+    if (!CONTACT) return;
+    var subject = "Board access request", body = "Hi,\n\nPlease give me access to this board: \n\nThanks,\n" + VIEWER;
+    $("foot").innerHTML = "Boards are shared by your support lead. Missing one? <a href='mailto:" + esc(CONTACT) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body) + "' style='color:var(--accent)'>Request access</a>";
+  }
 
   function render() {
     var f = $("q").value.trim().toLowerCase();
@@ -124,7 +131,7 @@
   }
   function load() {
     $("err").textContent = "";
-    BQEBoard.api("board-directory").then(function (j) { LIST = j.boards || []; render(); })
+    BQEBoard.api("board-directory").then(function (j) { LIST = j.boards || []; VIEWER = (j.viewer || {}).name || ""; CONTACT = j.contact || ""; render(); askLink(); })
       .catch(function (e) { $("err").textContent = e.message; });
   }
   $("q").addEventListener("input", render);
